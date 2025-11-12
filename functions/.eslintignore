@@ -1,0 +1,6 @@
+# Ignore generated Data Connect files
+src/dataconnect-admin-generated/
+
+# If you are compiling TypeScript to JavaScript, ignore the generated JS files
+# (Assuming your TypeScript source is in 'src' and compiled JS goes to 'lib')
+lib/

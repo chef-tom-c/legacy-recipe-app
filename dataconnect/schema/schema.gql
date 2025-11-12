@@ -1,0 +1,60 @@
+type User @table {
+  email: String!
+  displayName: String!
+  createdAt: Timestamp!
+  photoUrl: String
+  subscription: SubscriptionType
+}
+
+type Recipe @table {
+  name: String!
+  instructions: String!
+  ingredients: [String!]!
+  cuisine: String!
+  mealType: String!
+  createdAt: Timestamp!
+  description: String
+  imageUrl: String
+  prepTime: Int
+  cookTime: Int
+  servings: Int
+  dietaryRestrictions: [String!]
+}
+
+type MealPlan @table {
+  user: User!
+  name: String!
+  startDate: Date!
+  endDate: Date!
+  createdAt: Timestamp!
+  description: String
+}
+
+type MealPlanEntry @table(key: ["mealPlan", "recipe", "dayOfWeek", "mealOfDay"]) {
+  mealPlan: MealPlan!
+  recipe: Recipe!
+  dayOfWeek: String!
+  mealOfDay: String!
+}
+
+type SubscriptionType @table {
+  name: String!
+  price: Float!
+  features: [String!]!
+  createdAt: Timestamp!
+  description: String
+}
+
+type CutcoRep @table {
+  email: String!
+  displayName: String!
+  repCode: String!
+  createdAt: Timestamp!
+  phoneNumber: String
+}
+
+type RepCustomer @table(key: ["rep", "customer"]) {
+  rep: CutcoRep!
+  customer: User!
+  onboardedAt: Timestamp!
+}

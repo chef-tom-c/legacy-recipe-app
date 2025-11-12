@@ -1,0 +1,59 @@
+mutation SeedDatabase @transaction @auth(level: NO_ACCESS) {
+  user_insertMany(data: [
+    {
+      id: "6478b483-719f-4d98-890b-b6b376271834",
+      createdAt: "2024-04-26T12:00:00Z",
+      displayName: "Seed User 1",
+      email: "seed1@example.com",
+      userType: "customer"
+    },
+    {
+      id: "7589c594-820g-5e09-9a1c-c7c487382945",
+      createdAt: "2024-04-27T14:30:00Z",
+      displayName: "Seed User 2",
+      email: "seed2@example.com",
+      userType: "rep"
+    }
+  ])
+  repProfile_insertMany(data: [
+    {
+      id: "869ad6a5-931h-6f1a-aa2d-d8d598493a56",
+      userId: "7589c594-820g-5e09-9a1c-c7c487382945",
+      monthlySubscriptionStatus: "active",
+      repId: "rep123"
+    }
+  ])
+  customerProfile_insertMany(data: [
+    {
+      id: "970be7b6-a42i-702b-bb3e-e9e6095a4b67",
+      userId: "6478b483-719f-4d98-890b-b6b376271834",
+      createdAt: "2024-04-26T12:00:00Z",
+      currentPoints: 100,
+      subscriptionType: "basic"
+    }
+  ])
+  badge_insertMany(data: [
+    {
+      id: "a81cf8c7-b53j-813c-cc4f-fa071a6b5c78",
+      description: "Welcome Badge",
+      difficulty: "easy",
+      name: "Welcome",
+      pointsAwarded: 50
+    },
+    {
+      id: "b92dg9d8-c64k-924d-dd5g-gb182b7c6d89",
+      description: "Advanced Badge",
+      difficulty: "hard",
+      name: "Advanced",
+      pointsAwarded: 200
+    }
+  ])
+  customerBadge_insertMany(data: [
+    {
+      customerId: "970be7b6-a42i-702b-bb3e-e9e6095a4b67",
+      badgeId: "a81cf8c7-b53j-813c-cc4f-fa071a6b5c78",
+      completedAt: "2024-04-26T13:00:00Z",
+      status: "completed"
+    }
+  ])
+}

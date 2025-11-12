@@ -1,0 +1,55 @@
+type User @table {
+  email: String!
+  displayName: String!
+  userType: String! # enum: SALES_REP, CUSTOMER
+  createdAt: Timestamp!
+  photoUrl: String
+}
+
+type RepProfile @table {
+  user: User!
+  repId: String!
+  monthlySubscriptionStatus: String! # enum: ACTIVE, INACTIVE
+  cookingBio: String
+  personalWebsite: String
+}
+
+type CustomerProfile @table {
+  user: User!
+  subscriptionType: String! # enum: FREE, PRO, PREMIER
+  currentPoints: Int!
+  createdAt: Timestamp!
+  referredByRep: RepProfile
+}
+
+type SubscriptionType @table {
+  name: String!
+  price: Float!
+  description: String!
+  benefits: [String!]!
+}
+
+type TrialCredit @table {
+  issuedByRep: RepProfile!
+  code: String!
+  issuedAt: Timestamp!
+  expiresAt: Timestamp!
+  status: String! # enum: ISSUED, REDEEMED, EXPIRED
+  redeemedByCustomer: CustomerProfile
+}
+
+type Badge @table {
+  name: String!
+  description: String!
+  pointsAwarded: Int!
+  difficulty: String! # enum: EASY, MEDIUM, HARD
+  imageUrl: String
+  requirements: String
+}
+
+type CustomerBadge @table(key: ["customer", "badge"]) {
+  customer: CustomerProfile!
+  badge: Badge!
+  completedAt: Timestamp!
+  status: String! # enum: IN_PROGRESS, COMPLETED
+}

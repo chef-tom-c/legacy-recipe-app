@@ -1,0 +1,30 @@
+mutation SeedSubscriptionTypes @transaction @auth(level: NO_ACCESS) {
+  basic: subscriptionType_insert(data: {name: "Basic", description: "Entry-level subscription", price: 9.99, benefits: ["Access to basic features", "Standard support"]})
+  pro: subscriptionType_insert(data: {name: "Pro", description: "Professional subscription", price: 29.99, benefits: ["Access to pro features", "Priority support", "Advanced analytics"]})
+  enterprise: subscriptionType_insert(data: {name: "Enterprise", description: "Enterprise-level subscription", price: 99.99, benefits: ["Access to all features", "Dedicated support", "Custom integrations", "Unlimited storage"]})
+}
+
+query GetCustomerProfile @auth(level: USER) {
+  customerProfile(key: {userId_expr: "auth.uid"}) {
+    id
+    createdAt
+    currentPoints
+    subscriptionType
+  }
+}
+
+mutation CreateCustomerProfile @auth(level: USER) {
+  customerProfile_insert(data: {userId_expr: "auth.uid", createdAt_expr: "request.time", currentPoints: 0, subscriptionType: "Basic"})
+}
+
+query ListAvailableBadges @auth(level: PUBLIC, insecureReason: "This operation is safe to expose to the public") {
+  badges {
+    id
+    name
+    description
+    imageUrl
+    difficulty
+    pointsAwarded
+    requirements
+  }
+}

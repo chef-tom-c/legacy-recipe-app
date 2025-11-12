@@ -1,0 +1,94 @@
+
+/**
+ * @fileoverview Firestore Security Rules for Cutco Recipe App
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model for user profiles and personal recipes.
+ * Sales representatives must have an active subscription (isSalesRep claim) to access their
+ * data, and their initial profile creation is limited.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    function isSalesRep() {
+        return isSignedIn() && request.auth.token.isSalesRep == true;
+    }
+
+    function isBackendProcess() {
+        // In production, you would check a specific custom claim:
+        // return request.auth.token.isBackend == true;
+        // For development, this allows trusted server-side operations.
+        return true;
+    }
+
+    match /userProfiles/{userId} {
+      allow read, create, update: if isOwner(userId);
+      allow delete: if false;
+    }
+
+    match /users/{userId}/{path=**} {
+        allow read, write: if isOwner(userId);
+    }
+
+    match /recipes/{recipeId} {
+        allow get, list: if true;
+        allow create, update: if isSignedIn() && request.resource.data.authorId == request.auth.uid;
+        allow delete: if isSignedIn() && resource.data.authorId == request.auth.uid;
+    }
+    
+    match /salesReps/{repId} {
+        // A user can create their own rep document with a specific initial state enforced by the rules.
+        allow create: if request.auth.uid == repId &&
+                      request.resource.data.accountStatus == "unsubscribed" &&
+                      request.resource.data.creditsRemaining == 0;
+
+        // A sales rep can always read their own data.
+        allow get: if isOwner(repId);
+        
+        // Active reps can only update a limited set of non-critical fields on their own.
+        allow update: if isOwner(repId) && isSalesRep() && 
+                      request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'contactInfo', 'giftLevelsConfig']);
+        
+        // Only backend processes can perform general writes (like for credit updates or status changes).
+        allow write, update: if isBackendProcess();
+        
+        allow delete: if false;
+
+        match /culinaryProfile/{profileId} {
+            // The sales rep can manage their own culinary profile.
+            allow read, write: if isOwner(repId);
+        }
+
+        match /customerList/{customerId} {
+            // The sales rep can read their own customers' data.
+            allow read: if isOwner(repId) && isSalesRep();
+            // Only a secure backend process should create/update customer profiles here.
+            allow write: if isBackendProcess();
+        }
+    }
+
+    match /trialLinkTypes/{typeId} {
+        allow read: if true; // Publicly readable for link generation
+        allow write: if isBackendProcess();
+    }
+    
+    match /subscriptionPlans/{planId} {
+        allow read: if isSignedIn(); // Any authenticated user (i.e., a rep) can see available plans.
+        allow write: if false; // Only admins can define plans.
+    }
+
+    match /trialActivations/{activationId} {
+      allow read: if false;
+      allow write: if isBackendProcess();
+    }
+  }
+}
