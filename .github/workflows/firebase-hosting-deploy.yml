@@ -1,0 +1,33 @@
+name: Deploy to Firebase Hosting
+
+on:
+  push:
+    branches:
+      - main # Deploy on pushes to the 'main' branch
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Or your desired Node.js version for frontend build
+
+      - name: Install dependencies
+        run: npm install # Or yarn install, pnpm install
+
+      - name: Build frontend
+        run: npm run build # Or yarn build, pnpm build - command to build your web app into the 'public/' directory
+
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_KEY }}' # Uses your manually created secret
+          projectId: legacy-recipe-generator # Your Firebase Project ID
+          channelId: live # Deploy to the 'live' channel (your main site)
+          entryPoint: "./" # The root of your repository
