@@ -67,3 +67,17 @@ node_modules/
 
 # dataconnect generated files
 .dataconnect
+
+# --- Custom JSON File Rules (CRITICAL FOR SECURITY) ---
+# Ignore ALL .json files by default to prevent accidental credential commits.
+# This is VITAL for protecting service account keys and other sensitive data.
+*.json
+
+# Re-include specific .json files that ARE part of the project configuration
+# and are intended to be committed to your repository.
+!package.json
+!firebase.json
+# If you have other specific JSON configuration files that MUST be in your repo,
+# such as Firestore index definitions, uncomment and add them here:
+# !firestore.indexes.json
+# --- End Custom JSON File Rules ---
