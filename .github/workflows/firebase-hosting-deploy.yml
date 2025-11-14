@@ -12,16 +12,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20' # Or your desired Node.js version for frontend build
+      # --- COMMENTED OUT: No frontend build step needed if 'public/' is direct source or pre-built ---
+      # - name: Set up Node.js
+      #   uses: actions/setup-node@v4
+      #   with:
+      #     node-version: '20' # Or your desired Node.js version for frontend build
 
-      - name: Install dependencies
-        run: npm install # Or yarn install, pnpm install
+      # - name: Install dependencies
+      #   run: npm install # Or yarn install, pnpm install
 
-      - name: Build frontend
-        run: npm run build # Or yarn build, pnpm build - command to build your web app into the 'public/' directory
+      # - name: Build frontend
+      #   run: npm run build # Or yarn build, pnpm build - command to build your web app into the 'public/' directory
+      # --- END COMMENTED OUT ---
 
       - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
